@@ -6,11 +6,13 @@ export default function WordGame({ words }) {
   const [score, setScore] = useState(0)
   const [showMeaning, setShowMeaning] = useState(false)
   const [gameOver, setGameOver] = useState(false)
+  const [knownWords, setKnownWords] = useState([])
 
   const currentWord = words[currentIndex]
 
   const handleKnow = () => {
     setScore(score + 1)
+    setKnownWords([...knownWords, currentWord.word])
     nextWord()
   }
 
@@ -32,53 +34,86 @@ export default function WordGame({ words }) {
     setScore(0)
     setShowMeaning(false)
     setGameOver(false)
+    setKnownWords([])
   }
 
   if (gameOver) {
+    const percentage = Math.round((score / words.length) * 100)
     return (
       <motion.div
         className="text-center"
-        initial={{ scale: 0.8, opacity: 0 }}
+        initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
       >
-        <h2 className="text-3xl font-bold mb-4">游戏结束！</h2>
-        <p className="text-xl mb-2">你掌握了 <span className="text-green-400 font-bold">{score}</span> 个单词</p>
-        <p className="text-gray-400 mb-6">共 {words.length} 个单词</p>
-        <div className="text-6xl mb-6">
-          {score >= 8 ? '🏆' : score >= 5 ? '⭐' : '💪'}
+        <div className="w-40 h-40 mx-auto mb-6 rounded-full flex flex-col items-center justify-center" style={{
+          background: 'linear-gradient(135deg, #1e293b, #0f172a)',
+          border: '2px solid',
+          borderColor: percentage >= 60 ? '#10b981' : '#f59e0b'
+        }}>
+          <span className="text-4xl font-bold text-white">{score}</span>
+          <span className="text-sm" style={{ color: '#64748b' }}>/ {words.length}</span>
         </div>
-        <button
+
+        <h2 className="text-2xl font-bold text-white mb-2">游戏结束</h2>
+        <p className="text-lg mb-4" style={{ color: '#64748b' }}>
+          已掌握 <span style={{ color: '#10b981' }}>{score}</span> 个单词
+        </p>
+
+        {knownWords.length > 0 && (
+          <div className="mb-6">
+            <p className="text-sm mb-2" style={{ color: '#64748b' }}>已掌握的单词:</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {knownWords.map(word => (
+                <span key={word} className="px-3 py-1 rounded-full text-sm" style={{ background: '#10b981', color: '#fff' }}>
+                  {word}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <motion.button
           onClick={restartGame}
-          className="px-6 py-3 bg-indigo-600 rounded-xl hover:bg-indigo-500 transition"
+          className="px-8 py-3 rounded-lg font-medium"
+          style={{ background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', color: '#fff' }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         >
           再玩一次
-        </button>
+        </motion.button>
       </motion.div>
     )
   }
 
   return (
     <div className="text-center">
-      <div className="mb-6">
-        <span className="text-gray-400">进度: {currentIndex + 1} / {words.length}</span>
-        <div className="w-64 h-2 bg-gray-700 rounded-full mt-2 mx-auto overflow-hidden">
+      {/* Progress */}
+      <div className="w-full max-w-md mx-auto mb-8">
+        <div className="flex justify-between text-sm mb-2" style={{ color: '#64748b' }}>
+          <span>进度: {currentIndex + 1}/{words.length}</span>
+          <span>得分: {score}</span>
+        </div>
+        <div className="h-1.5 rounded-full" style={{ background: '#1e293b' }}>
           <motion.div
-            className="h-full bg-gradient-to-r from-indigo-500 to-purple-500"
+            className="h-full rounded-full"
+            style={{ background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)' }}
             initial={{ width: 0 }}
             animate={{ width: `${((currentIndex + 1) / words.length) * 100}%` }}
           />
         </div>
       </div>
 
+      {/* Word Card */}
       <AnimatePresence mode="wait">
         <motion.div
           key={currentIndex}
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -20, opacity: 0 }}
-          className="bg-gray-800 rounded-2xl p-8 mb-6 max-w-md mx-auto"
+          className="w-full max-w-md mx-auto p-8 rounded-xl border mb-8"
+          style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', borderColor: '#334155' }}
         >
-          <h3 className="text-4xl font-bold mb-4">{currentWord.word}</h3>
+          <h3 className="text-4xl font-bold text-white mb-4">{currentWord.word}</h3>
 
           <AnimatePresence>
             {showMeaning && (
@@ -87,42 +122,48 @@ export default function WordGame({ words }) {
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
               >
-                <p className="text-xl text-indigo-400 mb-2">{currentWord.meaning}</p>
-                <p className="text-gray-400 italic">"{currentWord.example}"</p>
+                <p className="text-xl mb-2" style={{ color: '#3b82f6' }}>{currentWord.meaning}</p>
+                <p className="text-sm italic" style={{ color: '#64748b' }}>"{currentWord.example}"</p>
               </motion.div>
             )}
           </AnimatePresence>
         </motion.div>
       </AnimatePresence>
 
+      {/* Buttons */}
       <div className="flex gap-4 justify-center">
         {!showMeaning ? (
-          <button
+          <motion.button
             onClick={() => setShowMeaning(true)}
-            className="px-6 py-3 bg-gray-700 rounded-xl hover:bg-gray-600 transition"
+            className="px-6 py-3 rounded-lg font-medium"
+            style={{ background: '#1e293b', color: '#94a3b8' }}
+            whileHover={{ scale: 1.02, background: '#334155' }}
+            whileTap={{ scale: 0.98 }}
           >
             显示释义
-          </button>
+          </motion.button>
         ) : (
           <>
-            <button
+            <motion.button
               onClick={handleDontKnow}
-              className="px-6 py-3 bg-red-600 rounded-xl hover:bg-red-500 transition"
+              className="px-6 py-3 rounded-lg font-medium flex items-center gap-2"
+              style={{ background: '#ef4444', color: '#fff' }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              不认识 😢
-            </button>
-            <button
+              <span>✗</span> 不认识
+            </motion.button>
+            <motion.button
               onClick={handleKnow}
-              className="px-6 py-3 bg-green-600 rounded-xl hover:bg-green-500 transition"
+              className="px-6 py-3 rounded-lg font-medium flex items-center gap-2"
+              style={{ background: '#10b981', color: '#fff' }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              认识 ✅
-            </button>
+              <span>✓</span> 认识
+            </motion.button>
           </>
         )}
-      </div>
-
-      <div className="mt-6 text-gray-400">
-        得分: <span className="text-white font-bold">{score}</span>
       </div>
     </div>
   )

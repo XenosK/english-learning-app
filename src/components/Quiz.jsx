@@ -14,9 +14,7 @@ export default function Quiz({ questions, onComplete }) {
     setSelected(index)
     const correct = index === questions[current].correct
 
-    if (correct) {
-      setScore(score + 1)
-    }
+    if (correct) setScore(score + 1)
     setIsCorrect(correct)
 
     setTimeout(() => {
@@ -32,21 +30,24 @@ export default function Quiz({ questions, onComplete }) {
   }
 
   if (showResult) {
+    const percentage = Math.round((score / questions.length) * 100)
     return (
       <motion.div
         className="text-center"
-        initial={{ scale: 0.8, opacity: 0 }}
+        initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
       >
-        <h2 className="text-3xl font-bold mb-4">测验完成！</h2>
-        <p className="text-xl mb-4">
-          你的得分: <span className="text-indigo-400 font-bold">{score}</span> / {questions.length}
-        </p>
-        <div className="text-6xl mb-4">
-          {score >= 4 ? '🎉' : score >= 2 ? '👍' : '💪'}
+        <div className="w-32 h-32 mx-auto mb-6 rounded-full flex items-center justify-center" style={{
+          background: percentage >= 60 ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #f59e0b, #d97706)'
+        }}>
+          <span className="text-4xl font-bold text-white">{percentage}%</span>
         </div>
-        <p className="text-gray-400">
-          {score >= 4 ? '太棒了！' : score >= 2 ? '还不错，继续努力！' : '再接再厉！'}
+        <h2 className="text-2xl font-bold text-white mb-2">测验完成</h2>
+        <p className="text-lg mb-4" style={{ color: '#64748b' }}>
+          你的得分: <span style={{ color: '#3b82f6' }}>{score}</span> / {questions.length}
+        </p>
+        <p style={{ color: '#94a3b8' }}>
+          {percentage >= 80 ? '优秀！继续加油！' : percentage >= 60 ? '良好！还有进步空间' : '需要多加练习'}
         </p>
       </motion.div>
     )
@@ -54,20 +55,31 @@ export default function Quiz({ questions, onComplete }) {
 
   return (
     <div className="max-w-xl mx-auto">
-      <div className="mb-6 flex justify-between items-center">
-        <span className="text-gray-400">问题 {current + 1} / {questions.length}</span>
-        <span className="text-indigo-400">得分: {score}</span>
+      {/* Progress */}
+      <div className="mb-6">
+        <div className="flex justify-between text-sm mb-2" style={{ color: '#64748b' }}>
+          <span>问题 {current + 1}/{questions.length}</span>
+          <span>得分: {score}</span>
+        </div>
+        <div className="h-1.5 rounded-full" style={{ background: '#1e293b' }}>
+          <motion.div
+            className="h-full rounded-full"
+            style={{ background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)' }}
+            initial={{ width: 0 }}
+            animate={{ width: `${((current + 1) / questions.length) * 100}%` }}
+          />
+        </div>
       </div>
 
+      {/* Question */}
       <AnimatePresence mode="wait">
         <motion.div
           key={current}
-          initial={{ x: 50, opacity: 0 }}
+          initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          exit={{ x: -50, opacity: 0 }}
-          transition={{ duration: 0.3 }}
+          exit={{ x: -20, opacity: 0 }}
         >
-          <h3 className="text-xl font-semibold mb-6">{questions[current].question}</h3>
+          <h3 className="text-xl font-medium text-white mb-6">{questions[current].question}</h3>
 
           <div className="space-y-3">
             {questions[current].options.map((option, index) => (
@@ -75,18 +87,26 @@ export default function Quiz({ questions, onComplete }) {
                 key={index}
                 onClick={() => handleAnswer(index)}
                 disabled={selected !== null}
-                className={`w-full p-4 rounded-xl text-left transition-all ${
-                  selected === index
-                    ? isCorrect
-                      ? 'bg-green-500 border-2 border-green-400'
-                      : 'bg-red-500 border-2 border-red-400'
-                    : selected !== null && index === questions[current].correct
-                    ? 'bg-green-500 border-2 border-green-400'
-                    : 'bg-gray-800 border-2 border-gray-700 hover:border-indigo-500 hover:bg-gray-700'
-                }`}
-                whileHover={selected === null ? { scale: 1.02 } : {}}
-                whileTap={selected === null ? { scale: 0.98 } : {}}
+                className="w-full p-4 rounded-lg text-left font-medium transition-all"
+                style={{
+                  background: selected === index
+                    ? (isCorrect ? '#10b981' : '#ef4444')
+                    : (selected !== null && index === questions[current].correct ? '#10b981' : '#1e293b'),
+                  border: '1px solid',
+                  borderColor: selected === index
+                    ? (isCorrect ? '#10b981' : '#ef4444')
+                    : (selected !== null && index === questions[current].correct ? '#10b981' : '#334155'),
+                  color: '#f8fafc'
+                }}
+                whileHover={selected === null ? { scale: 1.01, borderColor: '#3b82f6' } : {}}
+                whileTap={selected === null ? { scale: 0.99 } : {}}
               >
+                <span className="inline-block w-6 h-6 rounded-full text-sm mr-3 text-center" style={{
+                  background: selected === index || (selected !== null && index === questions[current].correct)
+                    ? 'rgba(255,255,255,0.2)' : '#334155'
+                }}>
+                  {String.fromCharCode(65 + index)}
+                </span>
                 {option}
               </motion.button>
             ))}

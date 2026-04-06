@@ -7,10 +7,10 @@ import VoiceLearning from './components/VoiceLearning'
 import { words, quizQuestions } from './data/words'
 
 const tabs = [
-  { id: 'cards', label: '单词卡片', icon: '📚' },
-  { id: 'voice', label: '语音学习', icon: '🎤' },
-  { id: 'game', label: '单词游戏', icon: '🎮' },
-  { id: 'quiz', label: '测验', icon: '📝' },
+  { id: 'cards', label: '词汇学习', icon: '📖' },
+  { id: 'voice', label: '口语训练', icon: '🎤' },
+  { id: 'game', label: '记忆游戏', icon: '🎯' },
+  { id: 'quiz', label: '能力测验', icon: '✓' },
 ]
 
 function App() {
@@ -30,48 +30,70 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen py-8 px-4">
+    <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(135deg, #0a0f1c 0%, #0f172a 50%, #0f172a 100%)' }}>
       {/* Header */}
-      <motion.header
-        className="text-center mb-12"
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-      >
-        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-          英语学习助手
-        </h1>
-        <p className="text-gray-400">用有趣的方式学习英语单词</p>
-      </motion.header>
+      <header className="border-b" style={{ borderColor: '#1e293b', background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(12px)' }}>
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)' }}>
+              <span className="text-white font-bold text-lg">E</span>
+            </div>
+            <div>
+              <h1 className="text-lg font-semibold text-white">English Pro</h1>
+              <p className="text-xs" style={{ color: '#64748b' }}>企业级英语学习平台</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-sm" style={{ color: '#64748b' }}>学习进度: 35%</span>
+            <div className="w-32 h-2 rounded-full" style={{ background: '#1e293b' }}>
+              <div className="h-full w-[35%] rounded-full" style={{ background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)' }}></div>
+            </div>
+            <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: '#1e293b' }}>
+              <span className="text-sm text-white">U</span>
+            </div>
+          </div>
+        </div>
+      </header>
 
-      {/* Tabs */}
-      <nav className="flex justify-center gap-2 mb-8">
-        {tabs.map(tab => (
-          <motion.button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-6 py-3 rounded-xl transition-all ${
-              activeTab === tab.id
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-            }`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <span className="mr-2">{tab.icon}</span>
-            {tab.label}
-          </motion.button>
-        ))}
+      {/* Navigation */}
+      <nav className="border-b" style={{ borderColor: '#1e293b', background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(12px)' }}>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex gap-1">
+            {tabs.map(tab => (
+              <motion.button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className="px-5 py-4 text-sm font-medium transition-all relative"
+                style={{
+                  color: activeTab === tab.id ? '#3b82f6' : '#64748b',
+                  background: 'transparent',
+                }}
+                whileHover={{ color: '#94a3b8' }}
+              >
+                <span className="mr-2">{tab.icon}</span>
+                {tab.label}
+                {activeTab === tab.id && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute bottom-0 left-0 right-0 h-0.5"
+                    style={{ background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)' }}
+                  />
+                )}
+              </motion.button>
+            ))}
+          </div>
+        </div>
       </nav>
 
       {/* Content */}
-      <main className="max-w-4xl mx-auto">
+      <main className="flex-1 max-w-6xl mx-auto w-full px-6 py-8">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
           >
             {activeTab === 'cards' && (
               <PixelCard
@@ -99,8 +121,8 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="text-center mt-12 text-gray-500 text-sm">
-        <p>用 ❤️ 制作 · reactbits 特效</p>
+      <footer className="border-t py-4 text-center" style={{ borderColor: '#1e293b', background: 'rgba(15, 23, 42, 0.8)' }}>
+        <p className="text-xs" style={{ color: '#475569' }}>© 2024 English Pro. 企业级英语学习平台</p>
       </footer>
     </div>
   )
