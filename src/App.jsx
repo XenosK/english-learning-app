@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import PixelCard from './components/PixelCard'
 import Quiz from './components/Quiz'
 import WordGame from './components/WordGame'
+import VoiceLearning from './components/VoiceLearning'
 import { words, quizQuestions } from './data/words'
 
 const tabs = [
   { id: 'cards', label: '单词卡片', icon: '📚' },
+  { id: 'voice', label: '语音学习', icon: '🎤' },
   { id: 'game', label: '单词游戏', icon: '🎮' },
   { id: 'quiz', label: '测验', icon: '📝' },
 ]
@@ -82,6 +84,8 @@ function App() {
                 total={words.length}
               />
             )}
+
+            {activeTab === 'voice' && <VoiceLearning />}
 
             {activeTab === 'game' && (
               <WordGame words={words} />
